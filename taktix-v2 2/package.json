@@ -1,0 +1,12 @@
+{
+  "name": "taktix",
+  "version": "1.0.0",
+  "description": "Taktix - Análisis del Mundial 2026",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
