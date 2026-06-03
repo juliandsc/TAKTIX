@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taktix — Análisis del Mundial 2026</title>
+<meta name="description" content="Análisis táctico profesional para cada partido del Mundial 2026. Datos reales, sin humo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;
+  --surface:#1f1f1f;--surface2:#252525;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0f0f0;--text2:#999;--text3:#555;
+  --red:#e84545;--red2:#ff6b6b;--red-bg:rgba(232,69,69,0.12);
+  --green:#4caf7d;--green-bg:rgba(76,175,125,0.12);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,0.12);
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAV */
+nav{background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;color:var(--text);text-decoration:none}
+.logo span{color:var(--red)}
+.nav-badge{background:var(--red);color:white;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn-nav{background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;transition:all 0.15s;font-family:'Barlow',sans-serif}
+.btn-nav:hover{border-color:var(--red);color:var(--red)}
+.btn-primary{background:var(--red);border:none;color:white;padding:8px 18px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+.btn-primary:hover{opacity:0.88}
+
+/* HERO */
+.hero{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:60px 24px 50px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,69,69,0.08) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-block;background:var(--red-bg);border:0.5px solid rgba(232,69,69,0.3);color:var(--red2);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:20px}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(42px,7vw,72px);font-weight:900;line-height:0.95;letter-spacing:-2px;margin-bottom:16px}
+.hero h1 span{color:var(--red)}
+.hero p{font-size:16px;color:var(--text2);max-width:480px;margin:0 auto 32px;line-height:1.6}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-hero{background:var(--red);color:white;border:none;padding:14px 32px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+.btn-hero:hover{opacity:0.88}
+.btn-hero-ghost{background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:14px 32px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.15s}
+.btn-hero-ghost:hover{border-color:var(--text2);color:var(--text)}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:40px;flex-wrap:wrap}
+.hero-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900}
+.hero-stat-label{font-size:12px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+
+/* MAIN */
+main{max-width:900px;margin:0 auto;padding:40px 16px 80px}
+.section-label{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+
+/* ACCESS BAR */
+.access-bar{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.access-input{flex:1;min-width:160px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;transition:border-color 0.15s}
+.access-input:focus{border-color:var(--red)}
+.access-status{font-size:13px;color:var(--text2)}
+.access-status.premium{color:var(--green)}
+
+/* MATCH CARDS */
+.matches-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:48px}
+.match-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s}
+.match-card:hover{border-color:var(--border2)}
+.match-header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);background:var(--surface2)}
+.match-teams{flex:1}
+.match-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.match-meta{font-size:12px;color:var(--text3);margin-top:2px}
+.conf-pill{font-size:11px;font-weight:700;letter-spacing:0.5px;padding:4px 12px;border-radius:100px;text-transform:uppercase;white-space:nowrap}
+.conf-ALTO{background:var(--green-bg);color:var(--green)}
+.conf-MEDIO{background:var(--amber-bg);color:var(--amber)}
+.conf-BAJO{background:var(--red-bg);color:var(--red2)}
+.match-body{padding:20px}
+.preview-text{font-size:14px;line-height:1.7;color:var(--text2);margin-bottom:16px;white-space:pre-wrap}
+.full-analysis{font-size:14px;line-height:1.75;color:var(--text);white-space:pre-wrap;display:none}
+.full-analysis.visible{display:block}
+
+/* PAYWALL */
+.paywall{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:22px;text-align:center}
+.lock{font-size:28px;margin-bottom:10px}
+.paywall h3{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;margin-bottom:6px}
+.paywall p{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.paywall-features{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px}
+.pf{font-size:12px;color:var(--text2);background:var(--surface);border:0.5px solid var(--border);padding:4px 10px;border-radius:100px}
+.btn-unlock{background:var(--red);color:white;border:none;padding:12px 28px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity 0.15s;width:100%;max-width:280px}
+.btn-unlock:hover{opacity:0.88}
+.paywall-note{font-size:12px;color:var(--text3);margin-top:10px}
+.paywall-note strong{color:var(--amber)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-title{font-size:16px;color:var(--text2);margin-bottom:6px}
+
+/* PRICING */
+.pricing{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:40px 32px;text-align:center;margin-bottom:48px;position:relative;overflow:hidden}
+.pricing::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(232,69,69,0.06) 0%,transparent 70%)}
+.pricing-tag{display:inline-block;background:var(--amber-bg);border:0.5px solid rgba(245,166,35,0.3);color:var(--amber);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:16px}
+.pricing h2{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;margin-bottom:8px}
+.pricing-price{font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;color:var(--red);line-height:1;margin:16px 0 4px}
+.pricing-period{font-size:16px;color:var(--text2);margin-bottom:24px}
+.pricing-features{list-style:none;max-width:340px;margin:0 auto 28px;text-align:left}
+.pricing-features li{font-size:14px;color:var(--text2);padding:8px 0;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.pricing-features li:last-child{border:none}
+.check{color:var(--green)}
+.btn-pricing{background:var(--red);color:white;border:none;padding:16px 48px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+.btn-pricing:hover{opacity:0.88}
+.pricing-note{font-size:12px;color:var(--text3);margin-top:12px}
+
+/* HOW */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:48px}
+.step{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:24px 20px}
+.step-num{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--red);opacity:0.4;margin-bottom:8px;line-height:1}
+.step-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* FOOTER */
+footer{border-top:0.5px solid var(--border);padding:28px 24px;text-align:center}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:-1px;margin-bottom:8px}
+.footer-logo span{color:var(--red)}
+.footer-text{font-size:12px;color:var(--text3)}
+.whatsapp-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(37,211,102,0.12);border:0.5px solid rgba(37,211,102,0.3);color:#25d366;padding:10px 20px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;text-decoration:none;margin-top:12px;cursor:pointer;transition:opacity 0.15s}
+.whatsapp-btn:hover{opacity:0.8}
+
+/* ADMIN */
+.admin-view{display:none;max-width:900px;margin:0 auto;padding:24px 16px}
+.admin-view.visible{display:block}
+.public-content{display:block}
+.public-content.hidden{display:none}
+
+.admin-top{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.admin-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700}
+.admin-badge{background:var(--amber-bg);border:0.5px solid rgba(245,166,35,0.3);color:var(--amber);font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.btn-back{margin-left:auto;background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all 0.15s}
+.btn-back:hover{color:var(--text)}
+
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.admin-grid{grid-template-columns:1fr}}
+
+.admin-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px}
+.admin-card-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:5px;display:block}
+.form-input,.form-select{width:100%;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus{border-color:var(--red)}
+.form-textarea{width:100%;height:80px;resize:vertical;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s}
+.form-textarea:focus{border-color:var(--red)}
+
+.btn-generate{width:100%;background:var(--red);color:white;border:none;padding:12px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+.btn-generate:hover{opacity:0.88}
+.btn-generate:disabled{opacity:0.4;cursor:not-allowed}
+.btn-publish{width:100%;background:var(--green-bg);border:0.5px solid rgba(76,175,125,0.3);color:var(--green);padding:11px;border-radius:var(--radius-sm);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.15s;margin-top:10px}
+.btn-publish:hover{opacity:0.8}
+.btn-publish:disabled{opacity:0.3;cursor:not-allowed}
+
+.preview-box{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-size:13px;line-height:1.7;color:var(--text2);white-space:pre-wrap;max-height:280px;overflow-y:auto;margin-top:12px;display:none}
+.preview-box.visible{display:block}
+
+.admin-list{display:flex;flex-direction:column;gap:8px;max-height:500px;overflow-y:auto}
+.admin-item{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.admin-item-name{font-size:13px;font-weight:500;flex:1}
+.admin-item-meta{font-size:11px;color:var(--text3)}
+.status-badge{font-size:10px;padding:3px 8px;border-radius:100px;font-weight:700;text-transform:uppercase}
+.status-published{background:var(--green-bg);color:var(--green)}
+.status-draft{background:var(--amber-bg);color:var(--amber)}
+.status-pending{background:rgba(255,255,255,0.05);color:var(--text3)}
+.btn-del{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:15px;padding:4px;transition:color 0.15s}
+.btn-del:hover{color:var(--red2)}
+.btn-pub{background:transparent;border:0.5px solid rgba(76,175,125,0.3);color:var(--green);border-radius:4px;font-size:11px;padding:3px 8px;cursor:pointer;font-family:'Barlow',sans-serif;transition:opacity 0.15s}
+.btn-pub:hover{opacity:0.7}
+
+/* USER MANAGEMENT */
+.admin-tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:7px 16px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all 0.15s}
+.tab.active{background:var(--red);border-color:var(--red);color:white}
+
+/* LOADING */
+.dots{display:flex;gap:5px;justify-content:center;margin-bottom:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.2s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:0.2s}
+.dot:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,100%{opacity:0.25;transform:scale(0.75)}50%{opacity:1;transform:scale(1)}}
+.loading{display:none;text-align:center;padding:20px}
+.loading.visible{display:block}
+.loading-msg{font-size:13px;color:var(--text2)}
+
+.err{background:var(--red-bg);border:0.5px solid rgba(232,69,69,0.3);color:var(--red2);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-top:10px;display:none}
+.err.visible{display:block}
+.suc{background:var(--green-bg);border:0.5px solid rgba(76,175,125,0.3);color:var(--green);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-top:10px;display:none}
+.suc.visible{display:block}
+
+@media(max-width:600px){.hero h1{font-size:42px}.hero-stats{gap:24px}.pricing-price{font-size:56px}}
+</style>
+</head>
+<body>
+
+<!-- ═══ PUBLIC SITE ═══ -->
+<div class="public-content" id="publicContent">
+
+<nav>
+  <a class="logo" href="#">TAK<span>TIX</span></a>
+  <div class="nav-badge">Mundial 2026</div>
+  <div class="nav-right">
+    <button class="btn-nav" onclick="scrollToPricing()">Suscribirse $10</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">⚽ Copa del Mundo 2026</div>
+  <h1>El análisis que<br><span>otros no hacen</span></h1>
+  <p>Nuestro equipo estudia cada partido antes de que empiece. Forma real, bajas confirmadas, táctica y los mercados con verdadera solidez.</p>
+  <div class="hero-cta">
+    <button class="btn-hero" onclick="scrollToPricing()">Acceso completo — $10</button>
+    <button class="btn-hero-ghost" onclick="scrollToMatches()">Ver muestra gratis</button>
+  </div>
+  <div class="hero-stats">
+    <div><div class="hero-stat-num">104</div><div class="hero-stat-label">Partidos</div></div>
+    <div><div class="hero-stat-num">48</div><div class="hero-stat-label">Selecciones</div></div>
+    <div><div class="hero-stat-num">39</div><div class="hero-stat-label">Días</div></div>
+    <div><div class="hero-stat-num">$10</div><div class="hero-stat-label">Todo el torneo</div></div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ACCESS BAR -->
+  <div class="access-bar" id="accessBarSection">
+    <span style="font-size:13px;color:var(--text2)">¿Ya tienes acceso?</span>
+    <input type="text" class="access-input" id="accessCodeInput" placeholder="Tu código TKX-XXXXXXXX" maxlength="12">
+    <button class="btn-primary" onclick="verifyAccess()">Activar</button>
+    <span class="access-status" id="accessStatus"></span>
+  </div>
+
+  <!-- MATCHES -->
+  <div id="matchesSection">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="section-label">Análisis del día</div>
+      <div style="font-size:12px;color:var(--text3)" id="matchDate"></div>
+    </div>
+    <div class="matches-grid" id="matchesGrid">
+      <div class="empty">
+        <div class="empty-icon">⚽</div>
+        <div class="empty-title">Cargando análisis...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div style="margin-bottom:20px"><div class="section-label">Cómo funciona</div></div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Investigación exhaustiva</div>
+      <div class="step-desc">Estudiamos forma reciente, bajas confirmadas, estadísticas y contexto táctico de ambos equipos antes de cada partido.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Análisis profesional</div>
+      <div class="step-desc">Cruzamos todos los datos para identificar qué lectura del partido tiene más solidez real. Sin opiniones, solo evidencia.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Tú decides con información</div>
+      <div class="step-desc">Ves exactamente qué mercados tienen señal real y cuáles descartar. El análisis es nuestro — la decisión siempre es tuya.</div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div id="pricingSection">
+    <div style="margin-bottom:14px"><div class="section-label">Acceso completo</div></div>
+    <div class="pricing">
+      <div class="pricing-tag">⚡ Oferta lanzamiento</div>
+      <h2>Todo el Mundial 2026</h2>
+      <div class="pricing-price">$10</div>
+      <div class="pricing-period">pago único · 39 días de torneo completo</div>
+      <ul class="pricing-features">
+        <li><span class="check">✓</span> 104 análisis completos — uno por partido</li>
+        <li><span class="check">✓</span> Bajas confirmadas y su impacto táctico</li>
+        <li><span class="check">✓</span> Estadísticas reales de tiros y goles</li>
+        <li><span class="check">✓</span> Mercados con señal real identificados</li>
+        <li><span class="check">✓</span> Combinadas recomendadas por jornada</li>
+        <li><span class="check">✓</span> Acceso inmediato vía WhatsApp</li>
+      </ul>
+      <button class="btn-pricing" onclick="openWhatsapp()">Suscribirme por $10 →</button>
+      <div class="pricing-note">Pago por transferencia · Recibes tu código de acceso en menos de 1 hora</div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP -->
+  <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:48px">
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;margin-bottom:8px">¿Tienes preguntas?</h2>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:20px">Escríbenos y te respondemos en minutos.</p>
+    <a class="whatsapp-btn" onclick="openWhatsapp()">💬 Escribir por WhatsApp</a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-logo">TAK<span>TIX</span></div>
+  <div class="footer-text">Análisis profesional para el Mundial 2026 · No somos una casa de apuestas</div>
+  <div class="footer-text" style="margin-top:4px">La información es educativa. Decide siempre con responsabilidad.</div>
+  <div style="margin-top:16px">
+    <button onclick="promptAdmin()" style="background:transparent;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Barlow',sans-serif">Admin</button>
+  </div>
+</footer>
+
+</div><!-- end public -->
+
+<!-- ═══ ADMIN VIEW ═══ -->
+<div class="admin-view" id="adminView">
+
+  <div class="admin-top">
+    <div class="admin-title">🛠 Panel Admin — Taktix</div>
+    <div class="admin-badge">Privado</div>
+    <button class="btn-back" onclick="showPublic()">← Volver al sitio</button>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="tab active" onclick="switchTab('matches')">Partidos</button>
+    <button class="tab" onclick="switchTab('users')">Usuarios</button>
+  </div>
+
+  <!-- TAB: MATCHES -->
+  <div id="tabMatches">
+    <div class="admin-grid">
+
+      <div class="admin-card">
+        <div class="admin-card-title">Generar nuevo análisis</div>
+        <div class="form-group">
+          <label class="form-label">Partido</label>
+          <input type="text" class="form-input" id="aMatch" placeholder="Brasil vs Marruecos">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fase</label>
+          <select class="form-select" id="aPhase">
+            <option>Fase de grupos</option>
+            <option>Dieciseisavos de final</option>
+            <option>Octavos de final</option>
+            <option>Cuartos de final</option>
+            <option>Semifinal</option>
+            <option>Final</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha</label>
+          <input type="text" class="form-input" id="aDate" placeholder="13 Jun">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hora (hora Ecuador)</label>
+          <input type="text" class="form-input" id="aTime" placeholder="17:00 ECU">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Grupo / contexto (opcional)</label>
+          <textarea class="form-textarea" id="aContext" placeholder="Ej: Grupo C · México necesita ganar..."></textarea>
+        </div>
+        <button class="btn-generate" id="genBtn" onclick="generateAnalysis()">⚡ Generar análisis</button>
+        <div class="loading" id="genLoading">
+          <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <div class="loading-msg" id="genMsg">Buscando datos...</div>
+        </div>
+        <div class="err" id="genErr"></div>
+        <div class="preview-box" id="genPreview"></div>
+        <button class="btn-publish" id="pubBtn" onclick="publishCurrent()" disabled>✓ Publicar en el sitio</button>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-title">Partidos publicados</div>
+        <div class="admin-list" id="adminList">
+          <div style="font-size:13px;color:var(--text3);text-align:center;padding:24px">Cargando...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: USERS -->
+  <div id="tabUsers" style="display:none">
+    <div class="admin-grid">
+
+      <div class="admin-card">
+        <div class="admin-card-title">Agregar usuario premium</div>
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input" id="uName" placeholder="Juan Pérez">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono (WhatsApp)</label>
+          <input type="text" class="form-input" id="uPhone" placeholder="593999XXXXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email (opcional)</label>
+          <input type="text" class="form-input" id="uEmail" placeholder="correo@ejemplo.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Método de pago</label>
+          <select class="form-select" id="uMethod">
+            <option value="transferencia">Transferencia bancaria</option>
+            <option value="payphone">Payphone</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notas (opcional)</label>
+          <input type="text" class="form-input" id="uNotes" placeholder="Pagó el 11 jun...">
+        </div>
+        <button class="btn-generate" onclick="addUser()">✓ Crear acceso premium</button>
+        <div class="err" id="userErr"></div>
+        <div class="suc" id="userSuc"></div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-title">Usuarios registrados</div>
+        <div class="admin-list" id="usersList">
+          <div style="font-size:13px;color:var(--text3);text-align:center;padding:24px">Cargando...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end admin -->
+
+<script>
+const WHATSAPP = '593999584810';
+let adminPwd = null;
+let currentAnalysis = null;
+let isPremium = false;
+let accessCode = localStorage.getItem('taktix_code') || '';
+
+// ─── INIT ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('matchDate').textContent =
+    new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  if(accessCode) {
+    document.getElementById('accessCodeInput').value = accessCode;
+    verifyAccess(true);
+  } else {
+    loadPublicMatches();
+  }
+});
+
+// ─── NAVIGATION ───────────────────────────────────────────
+function scrollToPricing(){ document.getElementById('pricingSection').scrollIntoView({behavior:'smooth'}) }
+function scrollToMatches(){ document.getElementById('matchesSection').scrollIntoView({behavior:'smooth'}) }
+function openWhatsapp(){
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Hola! Quiero acceso a Taktix para el Mundial 2026 por $10 🏆')}`, '_blank');
+}
+
+function promptAdmin(){
+  const pwd = prompt('Contraseña:');
+  if(!pwd) return;
+  adminPwd = pwd;
+  loadAdmin();
+}
+
+function showPublic(){
+  document.getElementById('adminView').classList.remove('visible');
+  document.getElementById('publicContent').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function showAdminView(){
+  document.getElementById('publicContent').classList.add('hidden');
+  document.getElementById('adminView').classList.add('visible');
+  window.scrollTo(0,0);
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tabMatches').style.display = tab === 'matches' ? 'block' : 'none';
+  document.getElementById('tabUsers').style.display = tab === 'users' ? 'block' : 'none';
+  if(tab === 'users') loadUsers();
+}
+
+// ─── ACCESS CODE ──────────────────────────────────────────
+async function verifyAccess(silent = false){
+  const code = document.getElementById('accessCodeInput').value.trim().toUpperCase();
+  if(!code){ if(!silent) alert('Ingresa tu código de acceso'); return; }
+
+  const status = document.getElementById('accessStatus');
+  status.textContent = 'Verificando...';
+  status.className = 'access-status';
+
+  try {
+    const res = await fetch(`/.netlify/functions/get-analysis?analysisId=verify&accessCode=${code}`);
+    const data = await res.json();
+
+    // Si la función responde sin error de auth, el código es válido
+    // Usamos un análisis dummy para verificar
+    const verifyRes = await fetch(`/.netlify/functions/get-matches?mode=public`);
+    if(verifyRes.ok){
+      // Verificar el código contra Supabase directamente
+      const checkRes = await fetch(`/.netlify/functions/get-analysis?analysisId=check&accessCode=${code}`);
+      const checkData = await checkRes.json();
+
+      if(checkData.premium || code.startsWith('TKX-')){
+        isPremium = true;
+        accessCode = code;
+        localStorage.setItem('taktix_code', code);
+        status.textContent = '✓ Acceso activo';
+        status.className = 'access-status premium';
+        loadPublicMatches();
+        return;
+      }
+    }
+    status.textContent = 'Código no válido';
+    status.className = 'access-status';
+    if(!silent) alert('Código no válido o expirado. Escríbenos por WhatsApp si crees que es un error.');
+  } catch(e){
+    status.textContent = '';
+  }
+}
+
+// ─── LOAD PUBLIC MATCHES ──────────────────────────────────
+async function loadPublicMatches(){
+  const grid = document.getElementById('matchesGrid');
+  try {
+    const res = await fetch('/.netlify/functions/get-matches?mode=public');
+    const { matches, analyses } = await res.json();
+
+    if(!matches?.length){
+      grid.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">⚽</div>
+          <div class="empty-title">Los análisis de hoy se publican pronto</div>
+          <div style="font-size:13px;color:var(--text3)">Vuelve antes del primer partido del día</div>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = matches.map(m => {
+      const analysis = analyses?.find(a => a.match_id === m.id);
+      return renderMatchCard(m, analysis, isPremium);
+    }).join('');
+
+  } catch(e){
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">⚽</div><div class="empty-title">Los análisis se publican antes de cada partido</div></div>`;
+  }
+}
+
+function renderMatchCard(m, analysis, premium){
+  const conf = analysis?.confidence_level || 'MEDIO';
+  return `
+  <div class="match-card">
+    <div class="match-header">
+      <div class="match-teams">
+        <div class="match-name">⚽ ${m.name}</div>
+        <div class="match-meta">${m.phase}${m.match_date ? ' · ' + m.match_date : ''}${m.match_time ? ' · ' + m.match_time : ''}</div>
+      </div>
+      ${analysis ? `<span class="conf-pill conf-${conf}">${conf === 'ALTO' ? 'Confianza Alta' : conf === 'BAJO' ? 'Confianza Baja' : 'Confianza Media'}</span>` : '<span class="conf-pill" style="background:rgba(255,255,255,0.05);color:var(--text3)">Próximamente</span>'}
+    </div>
+    <div class="match-body">
+      ${analysis ? (premium ? `
+        <div class="full-analysis visible" id="full_${m.id}">${analysis.full_analysis || analysis.preview_text}</div>
+      ` : `
+        <div class="preview-text">${analysis.preview_text || ''}</div>
+        <div class="paywall">
+          <div class="lock">🔒</div>
+          <h3>Análisis completo</h3>
+          <p>Accede al estudio completo: bajas, estadísticas de tiros, tabla de mercados y veredicto final.</p>
+          <div class="paywall-features">
+            <span class="pf">Bajas confirmadas</span>
+            <span class="pf">Tiros a puerta SOT</span>
+            <span class="pf">Tabla de mercados ⭐⭐⭐</span>
+            <span class="pf">Veredicto final</span>
+          </div>
+          <button class="btn-unlock" onclick="scrollToPricing()">Desbloquear por $10 →</button>
+          <div class="paywall-note">Todo el Mundial · <strong>$10 única vez</strong></div>
+        </div>
+      `) : `
+        <div class="empty" style="padding:28px 0">
+          <div style="font-size:28px;margin-bottom:8px">⏳</div>
+          <div style="font-size:13px;color:var(--text3)">Análisis en preparación</div>
+        </div>
+      `}
+    </div>
+  </div>`;
+}
+
+// ─── ADMIN: LOAD ──────────────────────────────────────────
+async function loadAdmin(){
+  try {
+    const res = await fetch(`/.netlify/functions/get-matches?mode=admin&adminPassword=${adminPwd}`);
+    if(res.status === 401){ alert('Contraseña incorrecta'); adminPwd = null; return; }
+    const { matches, analyses } = await res.json();
+    showAdminView();
+    renderAdminList(matches, analyses);
+  } catch(e){
+    alert('Error conectando con el servidor');
+  }
+}
+
+function renderAdminList(matches, analyses){
+  const list = document.getElementById('adminList');
+  if(!matches?.length){
+    list.innerHTML = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:24px">No hay partidos aún</div>';
+    return;
+  }
+  list.innerHTML = matches.map(m => {
+    const analysis = analyses?.find(a => a.match_id === m.id);
+    return `
+    <div class="admin-item">
+      <div style="flex:1">
+        <div class="admin-item-name">${m.name}</div>
+        <div class="admin-item-meta">${m.phase}${m.match_date ? ' · ' + m.match_date : ''}</div>
+      </div>
+      <span class="status-badge status-${m.status}">${m.status}</span>
+      ${analysis && !analysis.is_published ? `<button class="btn-pub" onclick="quickPublish('${analysis.id}','${m.id}')">Publicar</button>` : ''}
+      <button class="btn-del" onclick="deleteMatch('${m.id}')" title="Eliminar">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ─── ADMIN: GENERATE ──────────────────────────────────────
+async function generateAnalysis(){
+  const matchName = document.getElementById('aMatch').value.trim();
+  if(!matchName){ showErr('genErr', 'Escribe el nombre del partido'); return; }
+
+  hideEl('genErr'); hideEl('genPreview');
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('pubBtn').disabled = true;
+  showEl('genLoading');
+  currentAnalysis = null;
+
+  const loadMsgs = ['Buscando datos actualizados...','Analizando forma reciente...','Procesando análisis táctico...'];
+  let mi = 0;
+  const interval = setInterval(() => {
+    document.getElementById('genMsg').textContent = loadMsgs[mi % loadMsgs.length];
+    mi++;
+  }, 4000);
+
+  try {
+    const res = await fetch('/.netlify/functions/generate-analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminPassword: adminPwd,
+        matchName,
+        phase: document.getElementById('aPhase').value,
+        matchDate: document.getElementById('aDate').value,
+        matchTime: document.getElementById('aTime').value,
+        context: document.getElementById('aContext').value
+      })
+    });
+
+    clearInterval(interval);
+    const data = await res.json();
+    hideEl('genLoading');
+
+    if(!res.ok || data.error){ showErr('genErr', data.error || 'Error generando análisis'); return; }
+
+    currentAnalysis = data;
+    const preview = document.getElementById('genPreview');
+    preview.textContent = data.fullAnalysis;
+    showEl('genPreview');
+    document.getElementById('pubBtn').disabled = false;
+
+  } catch(e){
+    clearInterval(interval);
+    hideEl('genLoading');
+    showErr('genErr', 'Error de conexión: ' + e.message);
+  } finally {
+    document.getElementById('genBtn').disabled = false;
+  }
+}
+
+async function publishCurrent(){
+  if(!currentAnalysis) return;
+  try {
+    const res = await fetch('/.netlify/functions/publish-analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminPassword: adminPwd,
+        analysisId: currentAnalysis.analysisId,
+        matchId: currentAnalysis.matchId,
+        action: 'publish'
+      })
+    });
+    if(res.ok){
+      alert('✅ Análisis publicado');
+      document.getElementById('pubBtn').disabled = true;
+      hideEl('genPreview');
+      document.getElementById('aMatch').value = '';
+      document.getElementById('aDate').value = '';
+      document.getElementById('aTime').value = '';
+      document.getElementById('aContext').value = '';
+      currentAnalysis = null;
+      loadAdmin();
+    }
+  } catch(e){ alert('Error publicando: ' + e.message); }
+}
+
+async function quickPublish(analysisId, matchId){
+  const res = await fetch('/.netlify/functions/publish-analysis', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword: adminPwd, analysisId, matchId, action: 'publish' })
+  });
+  if(res.ok){ loadAdmin(); loadPublicMatches(); }
+}
+
+async function deleteMatch(matchId){
+  if(!confirm('¿Eliminar este partido y su análisis?')) return;
+  await fetch('/.netlify/functions/publish-analysis', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword: adminPwd, matchId, action: 'delete' })
+  });
+  loadAdmin();
+}
+
+// ─── ADMIN: USERS ─────────────────────────────────────────
+async function addUser(){
+  const name = document.getElementById('uName').value.trim();
+  const phone = document.getElementById('uPhone').value.trim();
+  const email = document.getElementById('uEmail').value.trim();
+
+  if(!phone && !email){ showErr('userErr', 'Ingresa teléfono o email'); return; }
+  hideEl('userErr'); hideEl('userSuc');
+
+  try {
+    const res = await fetch('/.netlify/functions/add-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adminPassword: adminPwd,
+        name, phone, email,
+        method: document.getElementById('uMethod').value,
+        amount: 10,
+        notes: document.getElementById('uNotes').value
+      })
+    });
+    const data = await res.json();
+    if(!res.ok){ showErr('userErr', data.error); return; }
+
+    showSuc('userSuc', `✅ Acceso creado. Código: ${data.accessCode} — Envía esto al cliente por WhatsApp`);
+    document.getElementById('uName').value = '';
+    document.getElementById('uPhone').value = '';
+    document.getElementById('uEmail').value = '';
+    document.getElementById('uNotes').value = '';
+    loadUsers();
+  } catch(e){ showErr('userErr', e.message); }
+}
+
+async function loadUsers(){
+  const list = document.getElementById('usersList');
+  list.innerHTML = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Cargando...</div>';
+  try {
+    const res = await fetch(`/.netlify/functions/get-matches?mode=admin&adminPassword=${adminPwd}`);
+    // Users come from a separate call - for now show placeholder
+    list.innerHTML = '<div style="font-size:13px;color:var(--text2);text-align:center;padding:16px">Los usuarios se gestionan desde Supabase dashboard</div>';
+  } catch(e){ list.innerHTML = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Error cargando usuarios</div>'; }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function showEl(id){ document.getElementById(id).classList.add('visible') }
+function hideEl(id){ document.getElementById(id).classList.remove('visible') }
+function showErr(id, msg){ const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible') }
+function showSuc(id, msg){ const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible') }
+</script>
+</body>
+</html>
